@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Which Realm Legend Are You?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Lora:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --parchment: #F5EDD6;
+    --parchment-dark: #E8D9B5;
+    --ink: #1C1209;
+    --ink-soft: #3D2B10;
+    --ink-muted: #7A5C35;
+    --gold: #B8860B;
+    --gold-light: #D4A943;
+    --gold-pale: #F0DFA0;
+    --blood: #7B1E1E;
+    --blood-light: #A84040;
+    --forest: #2D4A2D;
+    --forest-light: #4A7A4A;
+    --stone: #5C5248;
+    --stone-light: #8C7B6B;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Lora', Georgia, serif;
+    background-color: #1A1107;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 20% 20%, rgba(184,134,11,0.08) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 80%, rgba(123,30,30,0.08) 0%, transparent 50%),
+      radial-gradient(ellipse at 50% 50%, rgba(45,74,45,0.05) 0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  .page-wrap {
+    width: 100%;
+    max-width: 660px;
+    position: relative;
+  }
+
+  /* PARCHMENT CARD */
+  .card {
+    background: var(--parchment);
+    border-radius: 4px;
+    padding: 3rem 2.5rem;
+    position: relative;
+    box-shadow:
+      0 0 0 1px rgba(184,134,11,0.3),
+      0 0 0 4px rgba(184,134,11,0.08),
+      0 20px 60px rgba(0,0,0,0.7),
+      inset 0 0 80px rgba(184,134,11,0.04);
+  }
+
+  /* Decorative corner runes */
+  .card::before, .card::after {
+    content: '✦';
+    position: absolute;
+    font-size: 18px;
+    color: var(--gold);
+    opacity: 0.5;
+  }
+  .card::before { top: 14px; left: 18px; }
+  .card::after { bottom: 14px; right: 18px; }
+
+  .corner-rune-br { position: absolute; top: 14px; right: 18px; font-size: 18px; color: var(--gold); opacity: 0.5; }
+  .corner-rune-tl { position: absolute; bottom: 14px; left: 18px; font-size: 18px; color: var(--gold); opacity: 0.5; }
+
+  /* DIVIDER */
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 1.5rem 0;
+  }
+  .divider-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--gold), transparent);
+    opacity: 0.4;
+  }
+  .divider-glyph { color: var(--gold); font-size: 14px; opacity: 0.6; }
+
+  /* HEADER */
+  .quiz-header { text-align: center; margin-bottom: 0.5rem; }
+  .subtitle-tag {
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    color: var(--gold);
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 0.75rem;
+  }
+  .quiz-title {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(22px, 5vw, 32px);
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1.25;
+    letter-spacing: 0.02em;
+    margin-bottom: 0.75rem;
+  }
+  .quiz-lore {
+    font-family: 'Lora', serif;
+    font-style: italic;
+    font-size: 14px;
+    color: var(--ink-muted);
+    line-height: 1.7;
+  }
+
+  /* PROGRESS */
+  .progress-wrap { margin: 1.5rem 0 1.75rem; }
+  .progress-meta {
+    display: flex;
+    justify-content: space-between;
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    color: var(--ink-muted);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+  }
+  .progress-track {
+    height: 4px;
+    background: rgba(92,82,72,0.2);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(to right, var(--gold), var(--gold-light));
+    border-radius: 99px;
+    transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  /* QUESTION */
+  .q-number {
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+  .q-text {
+    font-family: 'Lora', serif;
+    font-size: 17px;
+    font-weight: 500;
+    color: var(--ink);
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+  }
+
+  /* OPTIONS */
+  .options { display: flex; flex-direction: column; gap: 10px; }
+  .opt {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    background: rgba(92,82,72,0.06);
+    border: 1px solid rgba(92,82,72,0.2);
+    border-radius: 3px;
+    padding: 13px 16px;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    text-align: left;
+    width: 100%;
+  }
+  .opt:hover {
+    background: rgba(184,134,11,0.08);
+    border-color: rgba(184,134,11,0.4);
+  }
+  .opt.selected {
+    background: rgba(184,134,11,0.12);
+    border-color: var(--gold);
+    border-width: 1.5px;
+  }
+  .opt-letter {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--gold);
+    min-width: 18px;
+    margin-top: 2px;
+    letter-spacing: 0.05em;
+  }
+  .opt-text {
+    font-family: 'Lora', serif;
+    font-size: 14px;
+    color: var(--ink-soft);
+    line-height: 1.55;
+  }
+  .opt.selected .opt-text { color: var(--ink); }
+
+  /* NAV */
+  .nav-row { display: flex; justify-content: flex-end; margin-top: 1.75rem; }
+  .btn-next {
+    font-family: 'Cinzel', serif;
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    background: var(--ink);
+    color: var(--gold-light);
+    border: 1px solid var(--gold);
+    border-radius: 3px;
+    padding: 11px 28px;
+    cursor: pointer;
+    transition: all 0.18s;
+  }
+  .btn-next:hover { background: var(--ink-soft); color: var(--gold-pale); }
+  .btn-next:disabled {
+    background: rgba(92,82,72,0.1);
+    color: var(--stone-light);
+    border-color: rgba(92,82,72,0.2);
+    cursor: not-allowed;
+  }
+
+  /* ===== RESULT ===== */
+  .result-wrap { text-align: center; }
+  .result-emblem {
+    font-size: 52px;
+    margin-bottom: 0.75rem;
+    display: block;
+    animation: pulse-in 0.5s ease;
+  }
+  @keyframes pulse-in {
+    from { transform: scale(0.7); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+  .result-tag {
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 0.5rem;
+    display: block;
+  }
+  .result-name {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(28px, 7vw, 40px);
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: 0.04em;
+    margin-bottom: 0.25rem;
+    line-height: 1.15;
+  }
+  .result-title-line {
+    font-family: 'Lora', serif;
+    font-style: italic;
+    font-size: 15px;
+    color: var(--ink-muted);
+    margin-bottom: 1rem;
+  }
+  .traits-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+    justify-content: center;
+    margin-bottom: 1.25rem;
+  }
+  .trait-pill {
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 4px 12px;
+    border-radius: 99px;
+    border: 1px solid;
+  }
+  .result-desc {
+    font-family: 'Lora', serif;
+    font-size: 14.5px;
+    color: var(--ink-soft);
+    line-height: 1.75;
+    text-align: left;
+    margin-bottom: 1.5rem;
+    font-style: italic;
+  }
+
+  /* SCORE BARS */
+  .scores-section { margin-bottom: 1.5rem; text-align: left; }
+  .score-heading {
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 1rem;
+    text-align: center;
+  }
+  .score-row { margin-bottom: 10px; }
+  .score-label-row {
+    display: flex;
+    justify-content: space-between;
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    color: var(--ink-muted);
+    margin-bottom: 4px;
+  }
+  .score-track {
+    height: 4px;
+    background: rgba(92,82,72,0.15);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+  .score-bar {
+    height: 100%;
+    border-radius: 99px;
+    transition: width 0.8s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  .btn-retry {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    background: transparent;
+    color: var(--ink-muted);
+    border: 1px solid rgba(92,82,72,0.3);
+    border-radius: 3px;
+    padding: 9px 24px;
+    cursor: pointer;
+    transition: all 0.18s;
+    margin-top: 0.5rem;
+  }
+  .btn-retry:hover { border-color: var(--gold); color: var(--ink); }
+
+  /* SCREEN transitions */
+  .screen { animation: fade-up 0.35s ease; }
+  @keyframes fade-up {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (max-width: 480px) {
+    .card { padding: 2rem 1.25rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page-wrap">
+  <div class="card">
+    <span class="corner-rune-br">✦</span>
+    <span class="corner-rune-tl">✦</span>
+    <div id="app"></div>
+  </div>
+</div>
+
+<script>
+const CHARS = {
+  baldric: {
+    name: "Baldric",
+    title: "The Cursed Knight",
+    icon: "⚔️",
+    traitColor: "#7B1E1E", traitBorder: "#A84040", traitBg: "rgba(123,30,30,0.08)",
+    barColor: "#7B1E1E",
+    traits: ["Honour-driven", "Burdened by guilt", "Seeks redemption", "Inner conflict"],
+    desc: "You carry the weight of your past like armour you cannot remove. Once guided by a strong moral code, you've been shaken by a moment that changed everything — something you did or failed to do that haunts you. You don't run from accountability; you face it head-on, even when it hurts. Deep down, all you want is to make things right and be worthy of the trust others once placed in you. Redemption isn't just a goal for you — it is a calling."
+  },
+  helga: {
+    name: "Helga",
+    title: "The Battle Beast",
+    icon: "🛡️",
+    traitColor: "#1C4A7A", traitBorder: "#3A7ABD", traitBg: "rgba(28,74,122,0.08)",
+    barColor: "#1C4A7A",
+    traits: ["Fiercely protective", "Loyal to the end", "Carries grief", "Unbreakable will"],
+    desc: "You love with everything you have, and that is both your greatest strength and your deepest wound. You would throw yourself into any storm to protect the people you care about, and when something goes wrong despite your efforts, the guilt is crushing. Others see someone tough and unshakeable. Inside, you replay every moment you weren't there, every voice you could not answer. You keep going not because it is easy, but because giving up would mean abandoning them a second time."
+  },
+  seraphine: {
+    name: "Seraphine",
+    title: "The Unlikely Mage",
+    icon: "✨",
+    traitColor: "#5A2060", traitBorder: "#9B4AAA", traitBg: "rgba(90,32,96,0.08)",
+    barColor: "#7B3A8A",
+    traits: ["Relentlessly curious", "Resilient", "Underestimated", "Self-taught"],
+    desc: "You have been told you don't belong more times than you can count — and you have proved them wrong every single time. Not with a dramatic moment of victory, but with quiet, stubborn persistence. You love to learn. You find something thrilling in dusty old books, forgotten ideas, and the questions no one else thinks to ask. People may underestimate you, but that has never stopped you from becoming exactly who you were meant to be. Your greatest power is simply never quitting."
+  },
+  fenwick: {
+    name: "Fenwick",
+    title: "The Wild Halfling",
+    icon: "🌿",
+    traitColor: "#2D4A2D", traitBorder: "#4A7A4A", traitBg: "rgba(45,74,45,0.08)",
+    barColor: "#3A6A3A",
+    traits: ["Fiercely independent", "Secretly lonely", "Resourceful", "Longs to belong"],
+    desc: "You have built walls so high that even you sometimes forget there is something softer underneath. Rejected early, you learned to rely on yourself — and you became very good at it. You move through the world on your own terms, answering to no one. But at the end of the day, when it is quiet, there is a hollow feeling that all that independence does not quite fill. You do not want pity. You want to be seen, chosen, and wanted — not because you need it, but because it would mean you are worth it."
+  }
+};
+
+const QUESTIONS = [
+  {
+    text: "Something goes terribly wrong — and it is partly your fault. What is your first instinct?",
+    options: [
+      { text: "Face it directly. I need to fix what I broke, even if it costs me.", scores: { baldric:3,helga:1,seraphine:1,fenwick:0 } },
+      { text: "I freeze. The thought that I let people down is almost unbearable.", scores: { baldric:1,helga:3,seraphine:0,fenwick:0 } },
+      { text: "I keep going. Stumbling does not mean stopping.", scores: { baldric:0,helga:1,seraphine:3,fenwick:1 } },
+      { text: "I disappear. I do not want anyone to see me struggling.", scores: { baldric:0,helga:0,seraphine:0,fenwick:3 } }
+    ]
+  },
+  {
+    text: "A close friend asks for help with something you find difficult. What do you do?",
+    options: [
+      { text: "I push through it — protecting them matters more than my discomfort.", scores: { baldric:2,helga:3,seraphine:0,fenwick:0 } },
+      { text: "I try, probably fail at first, but keep trying until I find a way.", scores: { baldric:1,helga:1,seraphine:3,fenwick:0 } },
+      { text: "I help quietly. I do not like making a fuss about what I do for others.", scores: { baldric:2,helga:1,seraphine:1,fenwick:1 } },
+      { text: "I am not great at being needed. I would rather handle things alone.", scores: { baldric:0,helga:0,seraphine:0,fenwick:3 } }
+    ]
+  },
+  {
+    text: "You overhear people talking about you behind your back. How do you feel?",
+    options: [
+      { text: "Ashamed. I already know what they are saying — and they are probably right.", scores: { baldric:3,helga:1,seraphine:0,fenwick:0 } },
+      { text: "Devastated. All I ever wanted was to not let anyone down.", scores: { baldric:0,helga:3,seraphine:0,fenwick:0 } },
+      { text: "Disappointed, but it will not stop me. I will work harder.", scores: { baldric:0,helga:0,seraphine:3,fenwick:0 } },
+      { text: "Bitter. Let them talk. I do not need their approval anyway.", scores: { baldric:0,helga:0,seraphine:1,fenwick:3 } }
+    ]
+  },
+  {
+    text: "What does belonging mean to you?",
+    options: [
+      { text: "Earning back the trust I once had — and maybe lost.", scores: { baldric:3,helga:1,seraphine:0,fenwick:1 } },
+      { text: "Being there for people when it matters most.", scores: { baldric:1,helga:3,seraphine:0,fenwick:0 } },
+      { text: "Finding a place where my curiosity and ideas are valued.", scores: { baldric:0,helga:0,seraphine:3,fenwick:1 } },
+      { text: "Something I want but do not know how to reach for.", scores: { baldric:0,helga:1,seraphine:1,fenwick:3 } }
+    ]
+  },
+  {
+    text: "When you are alone, what usually occupies your mind?",
+    options: [
+      { text: "A moment I cannot undo — replaying it, wishing I could change it.", scores: { baldric:3,helga:2,seraphine:0,fenwick:0 } },
+      { text: "The people I love and whether they are okay.", scores: { baldric:0,helga:3,seraphine:0,fenwick:0 } },
+      { text: "Questions. Ideas. Things I want to understand better.", scores: { baldric:0,helga:0,seraphine:3,fenwick:1 } },
+      { text: "A quiet emptiness I do not have a name for yet.", scores: { baldric:0,helga:0,seraphine:0,fenwick:3 } }
+    ]
+  },
+  {
+    text: "How do you usually handle rejection?",
+    options: [
+      { text: "I accept it as something I deserve, and try to do better.", scores: { baldric:3,helga:0,seraphine:1,fenwick:0 } },
+      { text: "I internalize it and wonder if I failed the people who needed me.", scores: { baldric:0,helga:3,seraphine:0,fenwick:0 } },
+      { text: "I use it as fuel. Being underestimated makes me work harder.", scores: { baldric:0,helga:0,seraphine:3,fenwick:1 } },
+      { text: "I push back. If you do not want me around, fine. I will make my own way.", scores: { baldric:0,helga:0,seraphine:0,fenwick:3 } }
+    ]
+  },
+  {
+    text: "What is your relationship with rules and authority?",
+    options: [
+      { text: "I believe in order and duty — until they conflict with what is right.", scores: { baldric:3,helga:1,seraphine:0,fenwick:0 } },
+      { text: "I follow them if they protect the people I care about.", scores: { baldric:1,helga:3,seraphine:0,fenwick:0 } },
+      { text: "I work within them, but always look for the overlooked corner.", scores: { baldric:0,helga:0,seraphine:3,fenwick:0 } },
+      { text: "Rules are for people who made them. They were never made for me.", scores: { baldric:0,helga:0,seraphine:0,fenwick:3 } }
+    ]
+  },
+  {
+    text: "You have finally achieved something you worked hard for. How does it feel?",
+    options: [
+      { text: "Bittersweet. It does not undo what came before.", scores: { baldric:3,helga:1,seraphine:0,fenwick:0 } },
+      { text: "Relief — but I am already thinking about what else could go wrong.", scores: { baldric:0,helga:3,seraphine:0,fenwick:0 } },
+      { text: "Like proof that I was right to believe in myself all along.", scores: { baldric:0,helga:0,seraphine:3,fenwick:0 } },
+      { text: "Strange. I am not sure I know how to just enjoy something.", scores: { baldric:0,helga:0,seraphine:0,fenwick:3 } }
+    ]
+  }
+];
+
+let current = 0;
+let answered = new Array(QUESTIONS.length).fill(null);
+let scores = { baldric:0, helga:0, seraphine:0, fenwick:0 };
+const LETTERS = ['A','B','C','D'];
+
+function render() {
+  const app = document.getElementById('app');
+  if (current < QUESTIONS.length) renderQuestion(app);
+  else renderResult(app);
+}
+
+function renderQuestion(app) {
+  const q = QUESTIONS[current];
+  const pct = (current / QUESTIONS.length) * 100;
+  app.innerHTML = `
+    <div class="screen">
+      <div class="quiz-header">
+        <span class="subtitle-tag">✦ The Scrolls of Character ✦</span>
+        <h1 class="quiz-title">Which Realm Legend Are You?</h1>
+        <p class="quiz-lore">Answer truthfully, traveller. The scroll does not lie.</p>
+      </div>
+      <div class="divider"><div class="divider-line"></div><span class="divider-glyph">⚜</span><div class="divider-line"></div></div>
+      <div class="progress-wrap">
+        <div class="progress-meta">
+          <span>Scroll ${current+1} of ${QUESTIONS.length}</span>
+          <span>${Math.round(pct)}%</span>
+        </div>
+        <div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div>
+      </div>
+      <p class="q-number">Question ${current+1}</p>
+      <p class="q-text">${q.text}</p>
+      <div class="options" id="opts"></div>
+      <div class="nav-row">
+        <button class="btn-next" id="btn-next" ${answered[current]===null?'disabled':''}>
+          ${current < QUESTIONS.length-1 ? 'Continue the journey →' : 'Reveal my fate →'}
+        </button>
+      </div>
+    </div>`;
+
+  const opts = document.getElementById('opts');
+  q.options.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'opt' + (answered[current]===i ? ' selected' : '');
+    btn.innerHTML = `<span class="opt-letter">${LETTERS[i]}</span><span class="opt-text">${opt.text}</span>`;
+    btn.onclick = () => pick(i);
+    opts.appendChild(btn);
+  });
+
+  document.getElementById('btn-next').onclick = () => {
+    if (answered[current] !== null) {
+      current++;
+      render();
+    }
+  };
+}
+
+function pick(i) {
+  const prev = answered[current];
+  if (prev !== null) Object.keys(scores).forEach(k => scores[k] -= QUESTIONS[current].options[prev].scores[k]);
+  answered[current] = i;
+  Object.keys(scores).forEach(k => scores[k] += QUESTIONS[current].options[i].scores[k]);
+  render();
+}
+
+function renderResult(app) {
+  const winner = Object.keys(scores).reduce((a,b) => scores[a]>=scores[b]?a:b);
+  const c = CHARS[winner];
+  const total = QUESTIONS.length * 3;
+  const charOrder = ['baldric','helga','seraphine','fenwick'];
+
+  const pills = c.traits.map(t =>
+    `<span class="trait-pill" style="background:${c.traitBg};color:${c.traitColor};border-color:${c.traitBorder};">${t}</span>`
+  ).join('');
+
+  const bars = charOrder.map(k => {
+    const ch = CHARS[k];
+    const pct = Math.round((scores[k]/total)*100);
+    return `<div class="score-row">
+      <div class="score-label-row"><span>${ch.name}</span><span>${pct}%</span></div>
+      <div class="score-track"><div class="score-bar" style="width:${pct}%;background:${ch.barColor};"></div></div>
+    </div>`;
+  }).join('');
+
+  app.innerHTML = `
+    <div class="screen result-wrap">
+      <span class="subtitle-tag">✦ The Scroll Has Spoken ✦</span>
+      <span class="result-emblem">${c.icon}</span>
+      <span class="result-tag">You are</span>
+      <h2 class="result-name">${c.name}</h2>
+      <p class="result-title-line">${c.title}</p>
+      <div class="divider"><div class="divider-line"></div><span class="divider-glyph">⚜</span><div class="divider-line"></div></div>
+      <div class="traits-row">${pills}</div>
+      <p class="result-desc">"${c.desc}"</p>
+      <div class="divider"><div class="divider-line"></div><span class="divider-glyph">⚜</span><div class="divider-line"></div></div>
+      <div class="scores-section">
+        <p class="score-heading">How the legends compared</p>
+        ${bars}
+      </div>
+      <button class="btn-retry" onclick="restart()">↺ Consult the scroll again</button>
+    </div>`;
+}
+
+function restart() {
+  current = 0;
+  answered = new Array(QUESTIONS.length).fill(null);
+  scores = { baldric:0,helga:0,seraphine:0,fenwick:0 };
+  render();
+}
+
+render();
+</script>
+</body>
+</html>
