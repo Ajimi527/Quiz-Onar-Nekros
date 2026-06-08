@@ -47,10 +47,10 @@ body.light-mode {
   --shadow:      0 24px 70px rgba(0,0,0,0.18);
 }
 
-/* Load Dragon Hunter font (place the file at `fonts/DragonHunter.ttf`) */
+/* Load Dragon Hunter font (using the file you added at project root) */
 @font-face {
   font-family: 'Dragon Hunter';
-  src: url('fonts/DragonHunter.ttf') format('truetype');
+  src: url('DragonHunter-9Ynxj.otf') format('opentype');
   font-weight: normal;
   font-style: normal;
   font-display: swap;
@@ -393,20 +393,33 @@ body.light-mode .intro-title {
   border-radius: 8px;
   padding: 3rem 2.25rem;
   position: relative;
+  overflow: visible;
   box-shadow: 0 30px 80px rgba(0,0,0,0.6), inset 0 6px 24px rgba(0,0,0,0.06);
   font-family: 'Dragon Hunter', 'EB Garamond', serif;
   animation: rise 0.45s cubic-bezier(0.22,1,0.36,1) both;
   transition: background 0.5s, border-color 0.4s;
 }
 .quiz-card::before {
+  /* top wooden rod */
   content: '';
   position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 2px;
-  background: linear-gradient(to right, transparent, var(--gold), transparent);
-  opacity: 0.55;
-  border-radius: 5px 5px 0 0;
-  animation: flicker 4s ease-in-out infinite;
+  top: -22px; left: 50%; transform: translateX(-50%);
+  width: calc(100% + 48px);
+  height: 18px;
+  background: linear-gradient(90deg,#6b4522 0%, #3b2208 50%, #6b4522 100%);
+  border-radius: 6px;
+  box-shadow: inset 0 6px 12px rgba(255,255,255,0.05), 0 8px 18px rgba(0,0,0,0.45);
+}
+.quiz-card::after {
+  /* bottom wooden rod */
+  content: '';
+  position: absolute;
+  bottom: -22px; left: 50%; transform: translateX(-50%);
+  width: calc(100% + 48px);
+  height: 18px;
+  background: linear-gradient(90deg,#6b4522 0%, #3b2208 50%, #6b4522 100%);
+  border-radius: 6px;
+  box-shadow: inset 0 6px 12px rgba(255,255,255,0.03), 0 -8px 18px rgba(0,0,0,0.45);
 }
 .corner {
   position: absolute;
