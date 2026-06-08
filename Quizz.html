@@ -385,10 +385,11 @@ body.light-mode .intro-title {
 .quiz-card {
   width: 100%;
   max-width: 680px;
-  /* parchment / scroll look */
-  background: linear-gradient(180deg,#fbf3df 0%, #f2e7c9 60%, #e8d9b0 100%);
-  background-image: repeating-linear-gradient(transparent, transparent 24px, rgba(0,0,0,0.02) 25px), radial-gradient(circle at 10% 10%, rgba(0,0,0,0.02) 0, transparent 25%);
-  background-blend-mode: overlay, normal;
+  /* force white background for the scroll for accessibility in dark mode */
+  background: #ffffff;
+  /* subtle parchment texture on top of white */
+  background-image: repeating-linear-gradient(transparent, transparent 28px, rgba(0,0,0,0.02) 29px);
+  background-blend-mode: overlay;
   border: 6px solid rgba(90,60,30,0.18);
   border-radius: 8px;
   padding: 3rem 2.25rem;
@@ -714,7 +715,7 @@ body.theme-fenwick .result-card::before { background: linear-gradient(to right, 
 .result-desc {
   font-family: 'EB Garamond', serif;
   font-style: italic;
-  font-size: 17px;
+  font-size: 20px;
   color: var(--muted);
   line-height: 1.85;
   margin-bottom: 1.75rem;
